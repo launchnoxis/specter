@@ -519,6 +519,7 @@ export default function App() {
       {/* Loading */}
       {loading && (
         <div className="scanning-wrap">
+          <div className="scanning-orb"/>
           <div className="scanning-text">[ scanning on-chain data... ]</div>
         </div>
       )}
