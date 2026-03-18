@@ -32,7 +32,7 @@ function RiskBanner({ score }) {
   );
 }
 
-function CheckCard({ label, value, subtext, status }) {
+function CheckCard({ label, value, detail, status }) {
   return (
     <div className="check-card">
       <div className="check-top">
@@ -42,7 +42,7 @@ function CheckCard({ label, value, subtext, status }) {
         </span>
       </div>
       <div className="check-value">{value}</div>
-      {subtext && <div className="check-sub">{subtext}</div>}
+      {detail && <div className="check-sub">{detail}</div>}
     </div>
   );
 }
@@ -62,12 +62,25 @@ function HolderRow({ rank, address, pct }) {
 }
 
 function ScanResult({ data, isPro }) {
-  const { token, checks, holders, bondingCurve, stats } = data;
+  const { token, checks, holders, bondingCurve, stats, riskReasons } = data;
   const score = data.riskScore;
 
   return (
     <div className="results">
       <RiskBanner score={score} />
+
+      {/* Risk reasons */}
+      {riskReasons && riskReasons.length > 0 && (
+        <div className="risk-reasons">
+          <div className="risk-reasons-title">[ flags detected ]</div>
+          {riskReasons.map((r, i) => (
+            <div className="risk-reason-row" key={i}>
+              <span className="risk-reason-dot">!</span>
+              {r}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Token header */}
       <div className="token-header">
@@ -94,7 +107,7 @@ function ScanResult({ data, isPro }) {
       {/* Stats */}
       <div className="stats-row">
         <div className="stat-box">
-          <div className="stat-val">${stats.marketCapK}K</div>
+          <div className="stat-val">{stats.marketCapK}</div>
           <div className="stat-lbl">Market Cap</div>
         </div>
         <div className="stat-box">
@@ -106,48 +119,48 @@ function ScanResult({ data, isPro }) {
           <div className="stat-lbl">Holders</div>
         </div>
         <div className="stat-box">
-          <div className="stat-val">{stats.txns}</div>
-          <div className="stat-lbl">Transactions</div>
+          <div className="stat-val">{bondingCurve.solRaised} SOL</div>
+          <div className="stat-lbl">SOL Raised</div>
         </div>
       </div>
 
       {/* Security checks */}
       <div className="checks-grid">
         <CheckCard
-          label="LP Lock"
-          value={checks.lpLocked ? `Locked ${checks.lpLockDuration}` : 'Not Locked'}
-          subtext={checks.lpLocked ? `${checks.lpLockPct}% of LP secured` : 'LP can be pulled anytime'}
-          status={checks.lpLocked ? 'pass' : 'fail'}
-        />
-        <CheckCard
           label="Mint Authority"
-          value={checks.mintRenounced ? 'Renounced' : 'Not Renounced'}
-          subtext={checks.mintRenounced ? 'Supply is fixed forever' : 'Dev can mint new tokens'}
+          value={checks.mintRenounced ? 'Renounced ✓' : 'Not Renounced ✗'}
+          detail={checks.mintDetail}
           status={checks.mintRenounced ? 'pass' : 'fail'}
         />
         <CheckCard
           label="Freeze Authority"
-          value={checks.freezeRenounced ? 'Renounced' : 'Not Renounced'}
-          subtext={checks.freezeRenounced ? 'Wallets cannot be frozen' : 'Dev can freeze wallets'}
+          value={checks.freezeRenounced ? 'Renounced ✓' : 'Not Renounced ✗'}
+          detail={checks.freezeDetail}
           status={checks.freezeRenounced ? 'pass' : 'fail'}
         />
         <CheckCard
           label="Dev Holdings"
           value={`${checks.devHoldingPct}%`}
-          subtext={checks.devHoldingPct > 10 ? 'High dev concentration' : 'Acceptable dev allocation'}
+          detail={checks.devDetail}
           status={checks.devHoldingPct > 15 ? 'fail' : checks.devHoldingPct > 8 ? 'warn' : 'pass'}
+        />
+        <CheckCard
+          label="LP / Bonding Curve"
+          value={bondingCurve.progress < 100 ? `${bondingCurve.progress}% to graduation` : 'Graduated'}
+          detail={checks.lpDetail}
+          status={bondingCurve.progress < 100 ? 'warn' : 'pass'}
         />
       </div>
 
-      {/* Bonding curve (free) */}
+      {/* Bonding curve */}
       <div className="curve-card">
-        <div className="curve-title">Bonding Curve Progress</div>
+        <div className="curve-title">Bonding Curve Progress — {bondingCurve.solRaised} / 85 SOL raised</div>
         <div className="curve-bar-wrap">
           <div className="curve-bar" style={{ width: `${bondingCurve.progress}%` }} />
         </div>
         <div className="curve-labels">
           <span>{bondingCurve.progress.toFixed(1)}% complete</span>
-          <span>{100 - bondingCurve.progress}% to graduation</span>
+          <span>{(85 - parseFloat(bondingCurve.solRaised || 0)).toFixed(2)} SOL to graduation</span>
         </div>
       </div>
 
