@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://specter-backend-production-95b1.up.railway.app/api',
   timeout: 20000,
 });
 
