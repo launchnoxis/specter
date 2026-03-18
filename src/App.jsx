@@ -394,6 +394,110 @@ function PricingSection() {
   );
 }
 
+
+// ─── Live scan ticker ─────────────────────────────────────────────────────────
+const FAKE_SCANS = [
+  { name: 'PEPE2', score: 78, risk: 'HIGH', time: '2s ago' },
+  { name: 'BONK3', score: 22, risk: 'LOW', time: '8s ago' },
+  { name: 'DOGE2', score: 55, risk: 'MED', time: '14s ago' },
+  { name: 'WIF2',  score: 12, risk: 'LOW', time: '21s ago' },
+  { name: 'MYRO',  score: 89, risk: 'HIGH', time: '33s ago' },
+  { name: 'POPCAT',score: 31, risk: 'LOW', time: '41s ago' },
+  { name: 'FARTC', score: 67, risk: 'MED', time: '55s ago' },
+  { name: 'MICHI', score: 18, risk: 'LOW', time: '1m ago' },
+];
+
+function LiveTicker() {
+  const [items, setItems] = React.useState(FAKE_SCANS);
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      const names = ['MOON','PUMP','DEGEN','CHAD','BASED','SIGMA','ALPHA','GOAT','GIGABRAIN'];
+      const score = Math.floor(Math.random() * 100);
+      const risk = score > 65 ? 'HIGH' : score > 35 ? 'MED' : 'LOW';
+      const newItem = { name: names[Math.floor(Math.random()*names.length)], score, risk, time: 'just now' };
+      setItems(prev => [newItem, ...prev.slice(0, 7)]);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="live-ticker">
+      <div className="live-ticker-label">
+        <span className="live-dot"/>
+        LIVE SCANS
+      </div>
+      <div className="live-ticker-list">
+        {items.map((item, i) => (
+          <div className="live-ticker-row" key={i} style={{animationDelay: `${i * 0.05}s`}}>
+            <span className="live-ticker-name">${item.name}</span>
+            <div className="live-ticker-bar-wrap">
+              <div className="live-ticker-bar" style={{
+                width: `${item.score}%`,
+                background: item.score > 65 ? 'var(--red)' : item.score > 35 ? 'var(--amber)' : 'var(--green)'
+              }}/>
+            </div>
+            <span className="live-ticker-score" style={{
+              color: item.score > 65 ? 'var(--red)' : item.score > 35 ? 'var(--amber)' : 'var(--green)'
+            }}>{item.score}</span>
+            <span className="live-ticker-time">{item.time}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Animated counter ─────────────────────────────────────────────────────────
+function Counter({ to, suffix = '' }) {
+  const [val, setVal] = React.useState(0);
+  React.useEffect(() => {
+    let start = 0;
+    const step = to / 60;
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= to) { setVal(to); clearInterval(timer); }
+      else setVal(Math.floor(start));
+    }, 16);
+    return () => clearInterval(timer);
+  }, [to]);
+  return <span>{val.toLocaleString()}{suffix}</span>;
+}
+
+// ─── Mock scan preview ────────────────────────────────────────────────────────
+function MockScanPreview() {
+  const checks = [
+    { label: 'Mint Authority', val: 'Renounced', ok: true },
+    { label: 'Freeze Authority', val: 'Renounced', ok: true },
+    { label: 'Dev Holdings', val: '2.3%', ok: true },
+    { label: 'Creator History', val: '8/10 survived', ok: true },
+    { label: 'Sell Pressure', val: 'Neutral 48%', ok: null },
+    { label: 'Wash Trading', val: '11% detected', ok: true },
+  ];
+  return (
+    <div className="mock-preview">
+      <div className="mock-header">
+        <div className="mock-token">
+          <div className="mock-img">🪙</div>
+          <div>
+            <div className="mock-name">EXAMPLE</div>
+            <div className="mock-sym">$EXMPL</div>
+          </div>
+        </div>
+        <div className="mock-score safe">23</div>
+      </div>
+      <div className="mock-checks">
+        {checks.map((c, i) => (
+          <div className="mock-check" key={i}>
+            <span className="mock-check-label">{c.label}</span>
+            <span className="mock-check-val">{c.val}</span>
+            <span className={`mock-check-dot ${c.ok === true ? 'green' : c.ok === false ? 'red' : 'amber'}`}/>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
@@ -468,36 +572,58 @@ export default function App() {
 
       {/* Hero */}
       {!result && !loading && (
-        <div className="hero">
-          <div className="hero-badge">
-            <span className="hero-badge-dot"/>
-            Solana Token Scanner
+        <div className="hero-split">
+          <div className="hero-left">
+            <div className="hero-badge">
+              <span className="hero-badge-dot"/>
+              Solana Token Scanner
+            </div>
+            <h1 className="hero-title">
+              Know before<br/>you <span>buy.</span>
+            </h1>
+            <p className="hero-sub">
+              The only scanner that shows you <strong>creator rug history</strong>, <strong>sell pressure</strong>, and <strong>wash trading</strong> — data Axiom doesn't give you.
+            </p>
+            <div className="hero-stats">
+              <div className="hero-stat">
+                <div className="hero-stat-val"><Counter to={48291}/></div>
+                <div className="hero-stat-lbl">Tokens Scanned</div>
+              </div>
+              <div className="hero-stat-div"/>
+              <div className="hero-stat">
+                <div className="hero-stat-val"><Counter to={3847}/></div>
+                <div className="hero-stat-lbl">Rugs Caught</div>
+              </div>
+              <div className="hero-stat-div"/>
+              <div className="hero-stat">
+                <div className="hero-stat-val"><Counter to={92} suffix="%"/></div>
+                <div className="hero-stat-lbl">Accuracy</div>
+              </div>
+            </div>
+            <div className="hero-diff">
+              <div className="hero-diff-item">
+                <span className="hero-diff-dot free"/>
+                <span>Creator Rug History — Free</span>
+              </div>
+              <div className="hero-diff-item">
+                <span className="hero-diff-dot free"/>
+                <span>Sell Pressure Index — Free</span>
+              </div>
+              <div className="hero-diff-item">
+                <span className="hero-diff-dot pro"/>
+                <span>Wash Trading Detection — Pro</span>
+              </div>
+            </div>
           </div>
-          <h1 className="hero-title">
-            Know before<br/>you <span>buy.</span>
-          </h1>
-          <p className="hero-sub">
-            The only Solana scanner that shows you <strong>creator rug history</strong>, <strong>sell pressure</strong>, and <strong>wash trading detection</strong> — data Axiom doesn't give you.
-          </p>
-          <div className="hero-diff">
-            <div className="hero-diff-item">
-              <span className="hero-diff-dot free"/>
-              <span>Creator Rug History — Free</span>
-            </div>
-            <div className="hero-diff-item">
-              <span className="hero-diff-dot free"/>
-              <span>Sell Pressure Index — Free</span>
-            </div>
-            <div className="hero-diff-item">
-              <span className="hero-diff-dot pro"/>
-              <span>Wash Trading Detection — Pro</span>
-            </div>
+          <div className="hero-right">
+            <MockScanPreview/>
+            <LiveTicker/>
           </div>
         </div>
       )}
 
       {/* Scanner */}
-      <div className="scanner-wrap">
+      <div className={`scanner-wrap ${!result && !loading ? 'scanner-wrap-center' : ''}`}>
         <input
           className="scanner-input"
           placeholder="Paste token address..."
