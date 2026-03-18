@@ -816,3 +816,22 @@ body::after {
   text-decoration: none;
 }
 .pro-tx-link:hover { text-decoration: underline; }
+
+.pro-wallets {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text3);
+}
+.pro-wallet-tag {
+  padding: 3px 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text2);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+}
