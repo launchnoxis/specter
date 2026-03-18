@@ -395,52 +395,75 @@ function PricingSection() {
 }
 
 
-// ─── Live scan ticker ─────────────────────────────────────────────────────────
-const FAKE_SCANS = [
-  { name: 'PEPE2', score: 78, risk: 'HIGH', time: '2s ago' },
-  { name: 'BONK3', score: 22, risk: 'LOW', time: '8s ago' },
-  { name: 'DOGE2', score: 55, risk: 'MED', time: '14s ago' },
-  { name: 'WIF2',  score: 12, risk: 'LOW', time: '21s ago' },
-  { name: 'MYRO',  score: 89, risk: 'HIGH', time: '33s ago' },
-  { name: 'POPCAT',score: 31, risk: 'LOW', time: '41s ago' },
-  { name: 'FARTC', score: 67, risk: 'MED', time: '55s ago' },
-  { name: 'MICHI', score: 18, risk: 'LOW', time: '1m ago' },
-];
+// ─── Live token ticker — real pump.fun launches ───────────────────────────────
+const BACKEND_URL = 'https://specter-backend-production-95b1.up.railway.app';
+
+function timeAgoMs(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 5) return 'just now';
+  if (s < 60) return `${s}s ago`;
+  if (s < 3600) return `${Math.floor(s/60)}m ago`;
+  return `${Math.floor(s/3600)}h ago`;
+}
 
 function LiveTicker() {
-  const [items, setItems] = React.useState(FAKE_SCANS);
+  const [tokens, setTokens] = React.useState([]);
+  const [connected, setConnected] = React.useState(false);
+
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      const names = ['MOON','PUMP','DEGEN','CHAD','BASED','SIGMA','ALPHA','GOAT','GIGABRAIN'];
-      const score = Math.floor(Math.random() * 100);
-      const risk = score > 65 ? 'HIGH' : score > 35 ? 'MED' : 'LOW';
-      const newItem = { name: names[Math.floor(Math.random()*names.length)], score, risk, time: 'just now' };
-      setItems(prev => [newItem, ...prev.slice(0, 7)]);
-    }, 3000);
-    return () => clearInterval(interval);
+    let es;
+    function connect() {
+      es = new EventSource(`${BACKEND_URL}/api/live`);
+      es.onopen = () => setConnected(true);
+      es.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (Array.isArray(data) && data.length > 0) setTokens(data.slice(0, 8));
+        } catch {}
+      };
+      es.onerror = () => {
+        setConnected(false);
+        es.close();
+        setTimeout(connect, 5000);
+      };
+    }
+    connect();
+    return () => es?.close();
+  }, []);
+
+  // Refresh times every second
+  const [, forceUpdate] = React.useState(0);
+  React.useEffect(() => {
+    const t = setInterval(() => forceUpdate(n => n+1), 5000);
+    return () => clearInterval(t);
   }, []);
 
   return (
     <div className="live-ticker">
       <div className="live-ticker-label">
-        <span className="live-dot"/>
-        LIVE SCANS
+        <span className={`live-dot ${connected ? '' : 'disconnected'}`}/>
+        {connected ? 'LIVE — NEW TOKENS ON PUMP.FUN' : 'CONNECTING...'}
       </div>
       <div className="live-ticker-list">
-        {items.map((item, i) => (
-          <div className="live-ticker-row" key={i} style={{animationDelay: `${i * 0.05}s`}}>
-            <span className="live-ticker-name">${item.name}</span>
-            <div className="live-ticker-bar-wrap">
-              <div className="live-ticker-bar" style={{
-                width: `${item.score}%`,
-                background: item.score > 65 ? 'var(--red)' : item.score > 35 ? 'var(--amber)' : 'var(--green)'
-              }}/>
-            </div>
-            <span className="live-ticker-score" style={{
-              color: item.score > 65 ? 'var(--red)' : item.score > 35 ? 'var(--amber)' : 'var(--green)'
-            }}>{item.score}</span>
-            <span className="live-ticker-time">{item.time}</span>
+        {tokens.length === 0 && (
+          <div style={{fontFamily:'var(--font-mono)', fontSize:'0.7rem', color:'var(--text3)', padding:'0.5rem 0'}}>
+            Waiting for new launches...
           </div>
+        )}
+        {tokens.map((token, i) => (
+          <a
+            key={token.mint + i}
+            className="live-ticker-row"
+            href={`https://pump.fun/${token.mint}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{textDecoration:'none', animationDelay: `${i * 0.04}s`}}
+          >
+            <span className="live-ticker-name">${token.symbol || token.name?.slice(0,8)}</span>
+            <span className="live-ticker-fullname">{token.name?.slice(0,16)}</span>
+            <span className="live-ticker-mcap">{token.marketCap}</span>
+            <span className="live-ticker-time">{timeAgoMs(token.time)}</span>
+          </a>
         ))}
       </div>
     </div>
