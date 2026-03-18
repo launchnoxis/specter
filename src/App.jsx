@@ -71,7 +71,13 @@ function ScanResult({ data, isPro }) {
       {/* Token header */}
       <div className="token-header">
         <div className="token-img">
-          {token.image ? <img src={token.image} alt={token.name} /> : '🪙'}
+          {token.image
+            ? <img
+                src={token.image.replace('https://ipfs.io/ipfs/', 'https://cf-ipfs.com/ipfs/').replace('ipfs://', 'https://cf-ipfs.com/ipfs/')}
+                alt={token.name}
+                onError={e => { e.target.style.display='none'; e.target.parentNode.innerText='🪙'; }}
+              />
+            : '🪙'}
         </div>
         <div>
           <div className="token-name">{token.name}</div>
