@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { scanToken } from './lib/api';
+import ProPage from './components/ProPage';
 import './styles/app.css';
 
 const MAX_FREE_SCANS = 5;
@@ -165,7 +166,7 @@ function ScanResult({ data, isPro }) {
           <div className="pro-gate-sub">
             Full top 10 holders, dev wallet transaction history, wallet alerts, and unlimited scans — $9/mo
           </div>
-          <button className="btn-upgrade" onClick={() => toast('Coming soon — join the waitlist at specter.gg')}>
+          <button className="btn-upgrade" onClick={() => setView('pro')}>
             Upgrade to Pro →
           </button>
         </div>
@@ -303,7 +304,7 @@ function PricingSection() {
               </div>
             ))}
           </div>
-          <button className="btn-plan pro" onClick={() => toast('Coming soon!')}>Upgrade to Pro</button>
+          <button className="btn-plan pro" onClick={() => setView('pro')}>Upgrade to Pro</button>
         </div>
       </div>
     </div>
@@ -314,6 +315,7 @@ export default function App() {
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [view, setView] = useState('home'); // home | pro
   const [scansUsed, setScansUsed] = useState(() => {
     const today = new Date().toDateString();
     const stored = JSON.parse(localStorage.getItem('specter_scans') || '{}');
@@ -321,6 +323,13 @@ export default function App() {
   });
 
   const scansLeft = MAX_FREE_SCANS - scansUsed;
+
+  if (view === 'pro') return (
+    <>
+      <Toaster position="top-right" toastOptions={{ style: { background: '#0f1f14', color: '#e8f5ec', border: '1px solid rgba(0,255,136,0.2)', fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.82rem' } }} />
+      <ProPage onBack={() => setView('home')} />
+    </>
+  );
 
   function incrementScans() {
     const today = new Date().toDateString();
@@ -370,7 +379,7 @@ export default function App() {
         </a>
         <div className="nav-right">
           <a href="https://x.com/LaunchNoxis" target="_blank" rel="noreferrer" className="nav-link">X / Twitter</a>
-          <button className="btn-pro" onClick={() => toast('Pro coming soon!')}>Pro — $9/mo</button>
+          <button className="btn-pro" onClick={() => setView('pro')}>Pro — $9/mo</button>
         </div>
       </nav>
 
