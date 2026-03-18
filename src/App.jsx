@@ -111,15 +111,15 @@ function ScanResult({ data, isPro }) {
           <div className="stat-lbl">Market Cap</div>
         </div>
         <div className="stat-box">
-          <div className="stat-val">{stats.age}</div>
+          <div className="stat-val">{stats.age !== '—' ? stats.age : bondingCurve.isGraduated ? 'Graduated' : '—'}</div>
           <div className="stat-lbl">Token Age</div>
         </div>
         <div className="stat-box">
-          <div className="stat-val">{stats.holders}</div>
+          <div className="stat-val">{typeof stats.holders === 'number' && stats.holders > 0 ? stats.holders.toLocaleString() : '—'}</div>
           <div className="stat-lbl">Holders</div>
         </div>
         <div className="stat-box">
-          <div className="stat-val">{bondingCurve.solRaised} SOL</div>
+          <div className="stat-val" style={{fontSize: stats.solRaised?.includes('Grad') ? '0.9rem' : undefined}}>{stats.solRaised}</div>
           <div className="stat-lbl">SOL Raised</div>
         </div>
       </div>
@@ -146,21 +146,23 @@ function ScanResult({ data, isPro }) {
         />
         <CheckCard
           label="LP / Bonding Curve"
-          value={bondingCurve.progress < 100 ? `${bondingCurve.progress}% to graduation` : 'Graduated'}
+          value={checks.isGraduated ? 'Graduated ✓' : bondingCurve.progress > 0 ? `${bondingCurve.progress}% complete` : 'Bonding curve active'}
           detail={checks.lpDetail}
-          status={bondingCurve.progress < 100 ? 'warn' : 'pass'}
+          status={checks.isGraduated ? 'pass' : 'warn'}
         />
       </div>
 
       {/* Bonding curve */}
       <div className="curve-card">
-        <div className="curve-title">Bonding Curve Progress — {bondingCurve.solRaised} / 85 SOL raised</div>
+        <div className="curve-title">
+          {bondingCurve.isGraduated ? '✓ Graduated to PumpSwap AMM' : `Bonding Curve — ${bondingCurve.solRaised} / 85 SOL raised`}
+        </div>
         <div className="curve-bar-wrap">
-          <div className="curve-bar" style={{ width: `${bondingCurve.progress}%` }} />
+          <div className="curve-bar" style={{ width: `${bondingCurve.progress}%`, background: bondingCurve.isGraduated ? 'var(--green)' : undefined }} />
         </div>
         <div className="curve-labels">
-          <span>{bondingCurve.progress.toFixed(1)}% complete</span>
-          <span>{(85 - parseFloat(bondingCurve.solRaised || 0)).toFixed(2)} SOL to graduation</span>
+          <span>{bondingCurve.isGraduated ? '100% — Fully graduated' : `${bondingCurve.progress.toFixed(1)}% complete`}</span>
+          <span>{bondingCurve.isGraduated ? 'Trading on PumpSwap' : `${Math.max(0, 85 - parseFloat(bondingCurve.solRaised || 0)).toFixed(2)} SOL to graduation`}</span>
         </div>
       </div>
 
