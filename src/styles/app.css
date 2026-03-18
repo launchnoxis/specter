@@ -888,3 +888,66 @@ body::after {
 .holders-badge.safe   { background: rgba(0,255,100,0.1); color: var(--green); border: 1px solid rgba(0,255,100,0.2); }
 .holders-badge.warn   { background: rgba(255,184,0,0.1); color: var(--amber); border: 1px solid rgba(255,184,0,0.2); }
 .holders-badge.danger { background: rgba(255,58,58,0.1); color: var(--red);   border: 1px solid rgba(255,58,58,0.2); }
+
+/* Updated live ticker */
+.live-dot.disconnected { background: var(--text3); box-shadow: none; animation: none; }
+.live-ticker-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.live-ticker-row:hover { background: rgba(0,255,100,0.05); }
+.live-ticker-fullname {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text2);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.live-ticker-mcap {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--green);
+  width: 60px;
+  text-align: right;
+}
+
+/* Creator profile card */
+.creator-addr-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+.creator-addr {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text);
+  font-weight: 600;
+}
+.creator-links { display: flex; gap: 8px; flex-shrink: 0; }
+.creator-link {
+  padding: 5px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--green);
+  text-decoration: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.creator-link:hover { border-color: var(--green); background: rgba(0,255,100,0.08); }
+.creator-note {
+  font-size: 0.75rem;
+  color: var(--text3);
+  font-family: var(--font-mono);
+  line-height: 1.6;
+}
