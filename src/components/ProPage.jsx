@@ -6,6 +6,12 @@ const RECEIVER_WALLET = 'VSnsBiRDhn1CgzuzD8YP9ZH811njRJ6t3NQN2SCKwzd';
 const USD_AMOUNT = 9;
 const BACKEND = 'https://specter-backend-production-95b1.up.railway.app';
 
+const WALLETS = [
+  { id: 'phantom',  label: 'Phantom',  getProvider: () => window.solana?.isPhantom ? window.solana : null },
+  { id: 'solflare', label: 'Solflare', getProvider: () => window.solflare || null },
+  { id: 'backpack', label: 'Backpack',  getProvider: () => window.backpack || null },
+];
+
 export default function ProPage({ onBack }) {
   const [step, setStep] = useState('info');
   const [txSig, setTxSig] = useState('');
@@ -13,6 +19,7 @@ export default function ProPage({ onBack }) {
   const [paying, setPaying] = useState(false);
   const [solPrice, setSolPrice] = useState(null);
   const [solAmount, setSolAmount] = useState(null);
+  const [selectedWallet, setSelectedWallet] = useState(null);
 
   useEffect(() => {
     async function fetchPrice() {
@@ -28,21 +35,24 @@ export default function ProPage({ onBack }) {
       }
     }
     fetchPrice();
+
+    // Auto-detect available wallets
+    const available = WALLETS.filter(w => w.getProvider());
+    if (available.length === 1) setSelectedWallet(available[0].id);
   }, []);
 
-  function getWallet() {
-    return window.solana || window.solflare || window.backpack || null;
-  }
-
   async function handlePay() {
-    const wallet = getWallet();
-    if (!wallet) return toast.error('No Solana wallet found. Install Phantom or Solflare.');
+    if (!selectedWallet) return toast.error('Please select a wallet');
     if (!solAmount) return toast.error('Still loading SOL price, please wait...');
+
+    const walletDef = WALLETS.find(w => w.id === selectedWallet);
+    const provider = walletDef?.getProvider();
+    if (!provider) return toast.error(`${walletDef?.label} not found. Make sure it's installed and unlocked.`);
 
     setPaying(true);
     try {
-      const resp = await wallet.connect();
-      const pubkey = resp.publicKey || wallet.publicKey;
+      const resp = await provider.connect();
+      const pubkey = resp.publicKey || provider.publicKey;
       const lamports = Math.round(solAmount * 1_000_000_000);
       const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
       const { blockhash } = await connection.getLatestBlockhash('finalized');
@@ -55,7 +65,7 @@ export default function ProPage({ onBack }) {
         })
       );
 
-      const signed = await wallet.signTransaction(tx);
+      const signed = await provider.signTransaction(tx);
       const sig = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: true });
       await connection.confirmTransaction(sig, 'confirmed');
       setTxSig(sig);
@@ -103,6 +113,24 @@ export default function ProPage({ onBack }) {
               </div>
             </div>
 
+            {/* Wallet selector */}
+            <div className="wallet-selector-label">Select your wallet</div>
+            <div className="wallet-selector">
+              {WALLETS.map(w => {
+                const available = !!w.getProvider();
+                return (
+                  <button
+                    key={w.id}
+                    className={`wallet-option ${selectedWallet === w.id ? 'selected' : ''} ${!available ? 'unavailable' : ''}`}
+                    onClick={() => available && setSelectedWallet(w.id)}
+                  >
+                    {w.label}
+                    {!available && <span className="wallet-not-installed"> (not installed)</span>}
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="pro-input-wrap">
               <input
                 className="pro-email-input"
@@ -113,16 +141,9 @@ export default function ProPage({ onBack }) {
               />
             </div>
 
-            <button className="pro-pay-btn" onClick={handlePay} disabled={paying || !solAmount}>
-              {paying ? 'Processing...' : `Pay ${solAmount ? solAmount + ' SOL' : '...'} →`}
+            <button className="pro-pay-btn" onClick={handlePay} disabled={paying || !solAmount || !selectedWallet}>
+              {paying ? 'Processing...' : selectedWallet ? `Pay ${solAmount ? solAmount + ' SOL' : '...'} with ${WALLETS.find(w=>w.id===selectedWallet)?.label} →` : 'Select a wallet to continue'}
             </button>
-
-            <div className="pro-wallets">
-              <span>Works with</span>
-              <span className="pro-wallet-tag">Phantom</span>
-              <span className="pro-wallet-tag">Solflare</span>
-              <span className="pro-wallet-tag">Backpack</span>
-            </div>
 
             <div className="pro-note">
               Payment goes directly to the Specter wallet. Access is activated manually within 24 hours.
