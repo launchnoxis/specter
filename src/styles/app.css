@@ -866,3 +866,35 @@ body::after {
   font-weight: 700;
   flex-shrink: 0;
 }
+
+/* Wallet selector */
+.wallet-selector-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.6rem;
+}
+.wallet-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+.wallet-option {
+  padding: 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.wallet-option:hover:not(.unavailable) { border-color: var(--green); color: var(--green); }
+.wallet-option.selected { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+.wallet-option.unavailable { opacity: 0.4; cursor: not-allowed; }
+.wallet-not-installed { font-size: 0.62rem; display: block; margin-top: 2px; }
