@@ -171,47 +171,70 @@ function ScanResult({ data, isPro }) {
 function FeaturesSection() {
   const feats = [
     {
-      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+      num: '01',
       title: 'Instant Risk Score',
       desc: 'Get a 0-100 risk score the moment you paste a contract address. Powered by real on-chain data.',
+      tag: 'Free',
     },
     {
-      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+      num: '02',
       title: 'LP Lock Detection',
-      desc: 'See if liquidity is locked, for how long, and how much. Know before you buy.',
+      desc: 'See if liquidity is locked, for how long, and what percentage. Know before you buy.',
+      tag: 'Free',
     },
     {
-      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
-      title: 'Authority Check',
-      desc: 'Verify mint and freeze authority status. A renounced token cannot have its supply inflated.',
+      num: '03',
+      title: 'Mint & Freeze Authority',
+      desc: 'A renounced token cannot have its supply inflated or wallets frozen. We check both.',
+      tag: 'Free',
     },
     {
-      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-      title: 'Holder Analysis',
-      desc: 'See the top holders and their concentration. High concentration = high dump risk.',
-    },
-    {
-      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>,
-      title: 'Bonding Curve',
+      num: '04',
+      title: 'Bonding Curve Progress',
       desc: 'Track pump.fun bonding curve progress and see how close a token is to graduating.',
+      tag: 'Free',
     },
     {
-      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>,
+      num: '05',
+      title: 'Holder Concentration',
+      desc: 'See who holds what. High concentration in a few wallets means high dump risk.',
+      tag: 'Free',
+    },
+    {
+      num: '06',
       title: 'Dev Wallet History',
-      desc: 'Pro: See every sell the dev wallet has made. Track their moves before they dump on you.',
+      desc: 'See every transaction the dev wallet has made. Track their moves before they dump on you.',
+      tag: 'Pro',
+    },
+    {
+      num: '07',
+      title: 'Wallet Alerts',
+      desc: 'Get notified the moment a tracked wallet buys or sells. Never miss a move.',
+      tag: 'Pro',
+    },
+    {
+      num: '08',
+      title: 'API Access',
+      desc: 'Integrate Specter data into your own tools. Full REST API with your Pro subscription.',
+      tag: 'Pro',
     },
   ];
 
   return (
     <div className="features">
-      <div className="features-title">What Specter checks</div>
-      <h2 className="features-h2">Everything a smart buyer needs<br/>to know.</h2>
-      <div className="features-grid">
+      <div className="features-header">
+        <div className="features-title">What Specter checks</div>
+        <h2 className="features-h2">Every signal.<br/>One scan.</h2>
+      </div>
+      <div className="features-list">
         {feats.map((f, i) => (
-          <div className="feat-box" key={i}>
-            <div className="feat-box-icon">{f.icon}</div>
-            <h3>{f.title}</h3>
-            <p>{f.desc}</p>
+          <div className="feat-row" key={i}>
+            <span className="feat-row-num">{f.num}</span>
+            <div className="feat-row-content">
+              <span className="feat-row-title">{f.title}</span>
+              <span className="feat-row-desc">{f.desc}</span>
+            </div>
+            <span className={`feat-row-tag ${f.tag === 'Pro' ? 'pro' : 'free'}`}>{f.tag}</span>
           </div>
         ))}
       </div>
