@@ -898,3 +898,164 @@ body::after {
 .wallet-option.selected { border-color: var(--green); color: var(--green); background: var(--green-dim); }
 .wallet-option.unavailable { opacity: 0.4; cursor: not-allowed; }
 .wallet-not-installed { font-size: 0.62rem; display: block; margin-top: 2px; }
+
+/* ─── Hero differentiators ──────────────────────────────────────────────────── */
+.hero-diff {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 1.5rem;
+  align-items: center;
+}
+.hero-diff-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text2);
+}
+.hero-diff-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.hero-diff-dot.free { background: var(--green); }
+.hero-diff-dot.pro  { background: var(--amber); }
+
+/* ─── Insight cards (shared) ────────────────────────────────────────────────── */
+.insight-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.insight-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.insight-title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+}
+.insight-empty {
+  font-size: 0.82rem;
+  color: var(--text2);
+  font-family: var(--font-mono);
+}
+
+/* Rug history */
+.insight-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+.insight-stat { text-align: center; }
+.insight-stat-val {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1;
+}
+.insight-stat-val.green { color: var(--green); }
+.insight-stat-val.red   { color: var(--red); }
+.insight-stat-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+.insight-tokens { display: flex; flex-direction: column; gap: 4px; }
+.insight-token-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.78rem;
+}
+.insight-token-row:last-child { border-bottom: none; }
+.insight-token-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.insight-token-dot.green { background: var(--green); }
+.insight-token-dot.red   { background: var(--red); }
+.insight-token-name { font-family: var(--font-mono); color: var(--text); flex: 1; }
+.insight-token-symbol { font-family: var(--font-mono); font-size: 0.7rem; color: var(--green); }
+.insight-token-age { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text3); }
+.insight-token-status { font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; }
+.insight-token-status.green { color: var(--green); }
+.insight-token-status.red   { color: var(--red); }
+
+/* Sell pressure */
+.pressure-label {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.pressure-bar-wrap {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+  background: var(--bg3);
+}
+.pressure-bar-sell { background: var(--red); transition: width 0.8s ease; }
+.pressure-bar-buy  { background: var(--green); transition: width 0.8s ease; }
+.pressure-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  margin-bottom: 1rem;
+}
+.pressure-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.pressure-detail-item {
+  background: var(--bg3);
+  border-radius: var(--r);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pressure-detail-lbl { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text3); }
+.pressure-detail-val { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 600; color: var(--text); }
+.pressure-detail-val.green { color: var(--green); }
+.pressure-detail-val.red   { color: var(--red); }
+
+/* Wash trading */
+.wash-score {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.wash-label {
+  font-size: 0.85rem;
+  font-weight: 400;
+  opacity: 0.7;
+}
+.wash-detail {
+  font-size: 0.8rem;
+  color: var(--text2);
+  margin-bottom: 1rem;
+  font-family: var(--font-mono);
+  line-height: 1.6;
+}
