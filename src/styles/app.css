@@ -868,3 +868,23 @@ body::after {
   .hero-left .hero-sub { text-align: center; }
   .hero-left .hero-diff { align-items: center; }
 }
+
+/* Holders header with badges */
+.holders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.holders-meta { display: flex; gap: 6px; }
+.holders-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+}
+.holders-badge.safe   { background: rgba(0,255,100,0.1); color: var(--green); border: 1px solid rgba(0,255,100,0.2); }
+.holders-badge.warn   { background: rgba(255,184,0,0.1); color: var(--amber); border: 1px solid rgba(255,184,0,0.2); }
+.holders-badge.danger { background: rgba(255,58,58,0.1); color: var(--red);   border: 1px solid rgba(255,58,58,0.2); }
