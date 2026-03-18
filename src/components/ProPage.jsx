@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { Connection, PublicKey, Transaction, SystemProgram } from '@solana/web3.js';
 
 const RECEIVER_WALLET = 'VSnsBiRDhn1CgzuzD8YP9ZH811njRJ6t3NQN2SCKwzd';
 const SOL_AMOUNT = 0.06; // ~$9 worth of SOL
@@ -24,7 +25,6 @@ export default function ProPage({ onBack }) {
       const senderPubkey = resp.publicKey.toString();
 
       // Build transaction
-      const { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } = await import('@solana/web3.js');
       const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
       const { blockhash } = await connection.getLatestBlockhash('finalized');
 
