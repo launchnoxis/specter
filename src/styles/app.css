@@ -835,3 +835,34 @@ body::after {
   font-family: var(--font-mono);
   font-size: 0.68rem;
 }
+
+/* Risk reasons */
+.risk-reasons {
+  background: rgba(255,68,68,0.04);
+  border: 1px solid rgba(255,68,68,0.15);
+  border-radius: var(--r-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.risk-reasons-title {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+.risk-reason-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--text2);
+  padding: 4px 0;
+  font-family: var(--font-mono);
+  line-height: 1.5;
+}
+.risk-reason-dot {
+  color: var(--red);
+  font-weight: 700;
+  flex-shrink: 0;
+}
