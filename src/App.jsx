@@ -62,7 +62,7 @@ function HolderRow({ rank, address, pct }) {
 }
 
 function ScanResult({ data, isPro }) {
-  const { token, checks, holders, bondingCurve, stats, riskReasons, rugHistory, sellPressure, washTrading } = data;
+  const { token, checks, holders, bondingCurve, stats, riskReasons, sellPressure, washTrading } = data;
   const score = data.riskScore;
 
   return (
@@ -174,44 +174,27 @@ function ScanResult({ data, isPro }) {
         ))}
       </div>
 
-      {/* Creator Rug History — FREE */}
-      {rugHistory && (
+      {/* Creator Profile — FREE */}
+      {token.creator && (
         <div className="insight-card">
           <div className="insight-header">
-            <div className="insight-title">Creator Rug History</div>
+            <div className="insight-title">Creator Wallet</div>
             <span className="feat-row-tag free">Free</span>
           </div>
-          {rugHistory.total === 0 ? (
-            <div className="insight-empty">This is the dev wallet's first token launch.</div>
-          ) : (
-            <>
-              <div className="insight-stats">
-                <div className="insight-stat">
-                  <div className="insight-stat-val">{rugHistory.total}</div>
-                  <div className="insight-stat-lbl">Total Launched</div>
-                </div>
-                <div className="insight-stat">
-                  <div className="insight-stat-val green">{rugHistory.survived}</div>
-                  <div className="insight-stat-lbl">Survived</div>
-                </div>
-                <div className="insight-stat">
-                  <div className="insight-stat-val red">{rugHistory.rugged}</div>
-                  <div className="insight-stat-lbl">Died / Rugged</div>
-                </div>
-              </div>
-              <div className="insight-tokens">
-                {rugHistory.tokens.slice(0, 5).map((t, i) => (
-                  <div className="insight-token-row" key={i}>
-                    <span className={`insight-token-dot ${t.alive ? 'green' : 'red'}`}/>
-                    <span className="insight-token-name">{t.name}</span>
-                    <span className="insight-token-symbol">${t.symbol}</span>
-                    <span className="insight-token-age">{t.age}</span>
-                    <span className={`insight-token-status ${t.alive ? 'green' : 'red'}`}>{t.alive ? 'alive' : 'dead'}</span>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
+          <div className="creator-addr-row">
+            <span className="creator-addr">{token.creator.slice(0,8)}...{token.creator.slice(-8)}</span>
+            <div className="creator-links">
+              <a href={`https://pump.fun/profile/${token.creator}`} target="_blank" rel="noreferrer" className="creator-link">
+                pump.fun profile →
+              </a>
+              <a href={`https://solscan.io/account/${token.creator}`} target="_blank" rel="noreferrer" className="creator-link">
+                Solscan →
+              </a>
+            </div>
+          </div>
+          <div className="creator-note">
+            View all tokens launched by this wallet on their pump.fun profile. Check for past rugs before buying.
+          </div>
         </div>
       )}
 
@@ -303,7 +286,7 @@ function FeaturesSection() {
     { num: '01', title: 'Instant Risk Score', desc: 'A 0-100 risk score calculated from mint authority, freeze authority, dev holdings, holder concentration and more.', tag: 'Free' },
     { num: '02', title: 'Bonding Curve Progress', desc: 'Exact SOL raised vs the 85 SOL graduation target. Know exactly how close a token is to PumpSwap.', tag: 'Free' },
     { num: '03', title: 'Mint & Freeze Authority', desc: 'Verify both authorities. A renounced token cannot inflate supply or freeze your wallet.', tag: 'Free' },
-    { num: '04', title: 'Creator Rug History', desc: "Every token the dev wallet ever launched — how many survived, how many died. Axiom doesn't show this.", tag: 'Free' },
+    { num: '04', title: 'Creator Wallet', desc: "See the dev wallet address and jump directly to their pump.fun profile to check all past launches.", tag: 'Free' },
     { num: '05', title: 'Sell Pressure Index', desc: 'Real ratio of unique sellers vs buyers in the last 100 trades. Not just volume — behavioral intent.', tag: 'Free' },
     { num: '06', title: 'Wash Trading Detection', desc: 'Wallets that both buy and sell to inflate volume. We calculate the exact % of fake volume. Axiom misses this entirely.', tag: 'Pro' },
     { num: '07', title: 'Full Holder Analysis', desc: 'Top 10 holders with LP addresses filtered out. See real distribution, not program accounts.', tag: 'Pro' },
@@ -626,7 +609,7 @@ export default function App() {
             <div className="hero-diff">
               <div className="hero-diff-item">
                 <span className="hero-diff-dot free"/>
-                <span>Creator Rug History — Free</span>
+                <span>Creator Wallet Profile — Free</span>
               </div>
               <div className="hero-diff-item">
                 <span className="hero-diff-dot free"/>
