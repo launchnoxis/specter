@@ -62,7 +62,7 @@ function HolderRow({ rank, address, pct }) {
 }
 
 function ScanResult({ data, isPro }) {
-  const { token, checks, holders, bondingCurve, stats, riskReasons } = data;
+  const { token, checks, holders, bondingCurve, stats, riskReasons, rugHistory, sellPressure, washTrading } = data;
   const score = data.riskScore;
 
   return (
@@ -172,16 +172,124 @@ function ScanResult({ data, isPro }) {
         ))}
       </div>
 
-      {/* Pro gate */}
-      {!isPro && (
+      {/* Creator Rug History — FREE */}
+      {rugHistory && (
+        <div className="insight-card">
+          <div className="insight-header">
+            <div className="insight-title">Creator Rug History</div>
+            <span className="feat-row-tag free">Free</span>
+          </div>
+          {rugHistory.total === 0 ? (
+            <div className="insight-empty">This is the dev wallet's first token launch.</div>
+          ) : (
+            <>
+              <div className="insight-stats">
+                <div className="insight-stat">
+                  <div className="insight-stat-val">{rugHistory.total}</div>
+                  <div className="insight-stat-lbl">Total Launched</div>
+                </div>
+                <div className="insight-stat">
+                  <div className="insight-stat-val green">{rugHistory.survived}</div>
+                  <div className="insight-stat-lbl">Survived</div>
+                </div>
+                <div className="insight-stat">
+                  <div className="insight-stat-val red">{rugHistory.rugged}</div>
+                  <div className="insight-stat-lbl">Died / Rugged</div>
+                </div>
+              </div>
+              <div className="insight-tokens">
+                {rugHistory.tokens.slice(0, 5).map((t, i) => (
+                  <div className="insight-token-row" key={i}>
+                    <span className={`insight-token-dot ${t.alive ? 'green' : 'red'}`}/>
+                    <span className="insight-token-name">{t.name}</span>
+                    <span className="insight-token-symbol">${t.symbol}</span>
+                    <span className="insight-token-age">{t.age}</span>
+                    <span className={`insight-token-status ${t.alive ? 'green' : 'red'}`}>{t.alive ? 'alive' : 'dead'}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Sell Pressure Index — FREE */}
+      {sellPressure && (
+        <div className="insight-card">
+          <div className="insight-header">
+            <div className="insight-title">Sell Pressure Index</div>
+            <span className="feat-row-tag free">Free</span>
+          </div>
+          <div className="pressure-label" style={{
+            color: sellPressure.label === 'Selling Pressure' ? 'var(--red)' : sellPressure.label === 'Buying Pressure' ? 'var(--green)' : 'var(--amber)'
+          }}>
+            {sellPressure.label}
+          </div>
+          <div className="pressure-bar-wrap">
+            <div className="pressure-bar-sell" style={{width: `${sellPressure.sellRatio}%`}}/>
+            <div className="pressure-bar-buy" style={{width: `${100 - sellPressure.sellRatio}%`}}/>
+          </div>
+          <div className="pressure-labels">
+            <span style={{color:'var(--red)'}}>Sells {sellPressure.sellRatio}%</span>
+            <span style={{color:'var(--text3)', fontSize:'0.7rem'}}>last {sellPressure.sampleSize} trades</span>
+            <span style={{color:'var(--green)'}}>Buys {(100 - sellPressure.sellRatio).toFixed(1)}%</span>
+          </div>
+          <div className="pressure-detail">
+            <div className="pressure-detail-item">
+              <span className="pressure-detail-lbl">Unique Buyers</span>
+              <span className="pressure-detail-val green">{sellPressure.uniqueBuyers}</span>
+            </div>
+            <div className="pressure-detail-item">
+              <span className="pressure-detail-lbl">Unique Sellers</span>
+              <span className="pressure-detail-val red">{sellPressure.uniqueSellers}</span>
+            </div>
+            <div className="pressure-detail-item">
+              <span className="pressure-detail-lbl">Buy Volume</span>
+              <span className="pressure-detail-val">{sellPressure.buyVolSol} SOL</span>
+            </div>
+            <div className="pressure-detail-item">
+              <span className="pressure-detail-lbl">Sell Volume</span>
+              <span className="pressure-detail-val">{sellPressure.sellVolSol} SOL</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Wash Trading Detection — PRO */}
+      {!isPro ? (
         <div className="pro-gate">
-          <div className="pro-gate-title">Unlock Full Analysis</div>
+          <div className="pro-gate-title">🔍 Wash Trading Detection — Pro</div>
           <div className="pro-gate-sub">
-            Full top 10 holders, dev wallet transaction history, wallet alerts, and unlimited scans — $9/mo
+            See what % of this token's volume is wash traded — wallets cycling SOL to fake activity. Axiom doesn't show this. Upgrade to see the full breakdown.
           </div>
           <button className="btn-upgrade" onClick={() => setView('pro')}>
-            Upgrade to Pro →
+            Upgrade to Pro — $9/mo →
           </button>
+        </div>
+      ) : washTrading && (
+        <div className="insight-card">
+          <div className="insight-header">
+            <div className="insight-title">Wash Trading Detection</div>
+            <span className="feat-row-tag pro">Pro</span>
+          </div>
+          <div className="wash-score" style={{
+            color: washTrading.label === 'High' ? 'var(--red)' : washTrading.label === 'Moderate' ? 'var(--amber)' : 'var(--green)'
+          }}>
+            {washTrading.washPct}% <span className="wash-label">{washTrading.label} wash trading</span>
+          </div>
+          <div className="wash-detail">
+            {washTrading.washWalletCount} of {washTrading.totalWallets} wallets both bought and sold in the last {washTrading.sampleSize} trades.
+          </div>
+          <div className="insight-tokens">
+            {washTrading.topWashWallets.map((w, i) => (
+              <div className="insight-token-row" key={i}>
+                <span className="insight-token-dot red"/>
+                <span className="insight-token-name">{w.address.slice(0,6)}...{w.address.slice(-4)}</span>
+                <span className="insight-token-age">↑ {w.buyVol} SOL bought</span>
+                <span className="insight-token-age">↓ {w.sellVol} SOL sold</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -190,54 +298,14 @@ function ScanResult({ data, isPro }) {
 
 function FeaturesSection() {
   const feats = [
-    {
-      num: '01',
-      title: 'Instant Risk Score',
-      desc: 'Get a 0-100 risk score the moment you paste a contract address. Powered by real on-chain data.',
-      tag: 'Free',
-    },
-    {
-      num: '02',
-      title: 'LP Lock Detection',
-      desc: 'See if liquidity is locked, for how long, and what percentage. Know before you buy.',
-      tag: 'Free',
-    },
-    {
-      num: '03',
-      title: 'Mint & Freeze Authority',
-      desc: 'A renounced token cannot have its supply inflated or wallets frozen. We check both.',
-      tag: 'Free',
-    },
-    {
-      num: '04',
-      title: 'Bonding Curve Progress',
-      desc: 'Track pump.fun bonding curve progress and see how close a token is to graduating.',
-      tag: 'Free',
-    },
-    {
-      num: '05',
-      title: 'Holder Concentration',
-      desc: 'See who holds what. High concentration in a few wallets means high dump risk.',
-      tag: 'Free',
-    },
-    {
-      num: '06',
-      title: 'Dev Wallet History',
-      desc: 'See every transaction the dev wallet has made. Track their moves before they dump on you.',
-      tag: 'Pro',
-    },
-    {
-      num: '07',
-      title: 'Wallet Alerts',
-      desc: 'Get notified the moment a tracked wallet buys or sells. Never miss a move.',
-      tag: 'Pro',
-    },
-    {
-      num: '08',
-      title: 'API Access',
-      desc: 'Integrate Specter data into your own tools. Full REST API with your Pro subscription.',
-      tag: 'Pro',
-    },
+    { num: '01', title: 'Instant Risk Score', desc: 'A 0-100 risk score calculated from mint authority, freeze authority, dev holdings, holder concentration and more.', tag: 'Free' },
+    { num: '02', title: 'Bonding Curve Progress', desc: 'Exact SOL raised vs the 85 SOL graduation target. Know exactly how close a token is to PumpSwap.', tag: 'Free' },
+    { num: '03', title: 'Mint & Freeze Authority', desc: 'Verify both authorities. A renounced token cannot inflate supply or freeze your wallet.', tag: 'Free' },
+    { num: '04', title: 'Creator Rug History', desc: "Every token the dev wallet ever launched — how many survived, how many died. Axiom doesn't show this.", tag: 'Free' },
+    { num: '05', title: 'Sell Pressure Index', desc: 'Real ratio of unique sellers vs buyers in the last 100 trades. Not just volume — behavioral intent.', tag: 'Free' },
+    { num: '06', title: 'Wash Trading Detection', desc: 'Wallets that both buy and sell to inflate volume. We calculate the exact % of fake volume. Axiom misses this entirely.', tag: 'Pro' },
+    { num: '07', title: 'Full Holder Analysis', desc: 'Top 10 holders with LP addresses filtered out. See real distribution, not program accounts.', tag: 'Pro' },
+    { num: '08', title: 'API Access', desc: 'Integrate Specter data into your own tools. Full REST API with your Pro subscription.', tag: 'Pro' },
   ];
 
   return (
@@ -407,8 +475,22 @@ export default function App() {
             Know before<br/>you <span>buy.</span>
           </h1>
           <p className="hero-sub">
-            Paste any pump.fun token address and get an instant risk analysis. LP lock, mint authority, holder concentration, bonding curve — all in one place.
+            The only Solana scanner that shows you <strong>creator rug history</strong>, <strong>sell pressure</strong>, and <strong>wash trading detection</strong> — data Axiom doesn't give you.
           </p>
+          <div className="hero-diff">
+            <div className="hero-diff-item">
+              <span className="hero-diff-dot free"/>
+              <span>Creator Rug History — Free</span>
+            </div>
+            <div className="hero-diff-item">
+              <span className="hero-diff-dot free"/>
+              <span>Sell Pressure Index — Free</span>
+            </div>
+            <div className="hero-diff-item">
+              <span className="hero-diff-dot pro"/>
+              <span>Wash Trading Detection — Pro</span>
+            </div>
+          </div>
         </div>
       )}
 
